@@ -1,19 +1,12 @@
 import { useCart } from '../context/CartContext';
 
-function CartIcon({ darkMode }) {
-  console.log("🔥 CartIcon COMPONENT IS RENDERING!"); // Debug
-  
-  const { getTotalItems, toggleCart } = useCart();
+function CartIcon({ darkMode, onCartClick }) {
+  const { getTotalItems } = useCart();
   const itemCount = getTotalItems();
-
-  console.log("🛒 Cart items count:", itemCount);
 
   return (
     <button 
-      onClick={() => {
-        console.log("🖱️ CART BUTTON CLICKED!"); // Debug
-        toggleCart();
-      }}
+      onClick={onCartClick}
       style={{
         position: 'relative',
         background: 'none',
@@ -44,7 +37,8 @@ function CartIcon({ darkMode }) {
           fontSize: '12px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          fontWeight: 'bold'
         }}>
           {itemCount}
         </span>

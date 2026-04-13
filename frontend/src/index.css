@@ -8088,3 +8088,30 @@ body.dark-mode .stat-number-3d {
     display: none !important;
   }
 }
+
+/* ========== NEW FOOTER STATS RESPONSIVENESS ========== */
+.footer-quick-stats-wrapper {
+  margin-bottom: 40px;
+}
+
+@media (max-width: 1024px) {
+  .footer-quick-stats-wrapper .stats-container {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-quick-stats-wrapper {
+    padding: 0 30px !important;
+  }
+  .footer-quick-stats-wrapper .stats-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-quick-stats-wrapper .stats-container {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}

@@ -5,7 +5,7 @@ import MapView from "../components/MapView"
 import { useLanguage } from "../LanguageContext"
 import { cropsData } from "../data/cropsData"
 import { CartProvider } from "../context/CartContext"
-import FlyoutCart from "../components/FlyoutCart"
+import CartDrawer from "../components/CartDrawer"
 
 function Buyer({ darkMode, onBackToHome, initialCategory = 'all' }) {
   const { t } = useLanguage()
@@ -15,7 +15,7 @@ function Buyer({ darkMode, onBackToHome, initialCategory = 'all' }) {
   const [myOffers, setMyOffers] = useState([])
   const [myQuotes, setMyQuotes] = useState([])
   const [viewMode, setViewMode] = useState('grid')
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory)
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory)  // ✅ Fixed: useSatate → useState
   const [error, setError] = useState(null)
   const [filters, setFilters] = useState({
     sortBy: 'newest',
@@ -259,7 +259,7 @@ function Buyer({ darkMode, onBackToHome, initialCategory = 'all' }) {
         )}
       </div>
       
-      <FlyoutCart darkMode={darkMode} />
+      <CartDrawer darkMode={darkMode} />
     </CartProvider>
   )
 }

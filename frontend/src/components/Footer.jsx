@@ -230,55 +230,6 @@ function Footer({ darkMode }) {
           </div>
         </div>
 
-        {/* ========== NEW: QUICK STATS SECTION ========== */}
-        <div className="footer-quick-stats">
-          <h4 className="links-title">📊 Quick Stats</h4>
-          <div className="stats-container">
-            <div className="stat-card-mini">
-              <span className="stat-emoji">🌾</span>
-              <div>
-                <div className="stat-number-mini">1,247+</div>
-                <div className="stat-label-mini">Active Farmers</div>
-              </div>
-            </div>
-            <div className="stat-card-mini">
-              <span className="stat-emoji">🏢</span>
-              <div>
-                <div className="stat-number-mini">89+</div>
-                <div className="stat-label-mini">NGOs & Buyers</div>
-              </div>
-            </div>
-            <div className="stat-card-mini">
-              <span className="stat-emoji">🌽</span>
-              <div>
-                <div className="stat-number-mini">28+</div>
-                <div className="stat-label-mini">Crop Varieties</div>
-              </div>
-            </div>
-            <div className="stat-card-mini">
-              <span className="stat-emoji">⭐</span>
-              <div>
-                <div className="stat-number-mini">4.8/5</div>
-                <div className="stat-label-mini">User Rating</div>
-              </div>
-            </div>
-            <div className="stat-card-mini">
-              <span className="stat-emoji">🚚</span>
-              <div>
-                <div className="stat-number-mini">156</div>
-                <div className="stat-label-mini">Orders Today</div>
-              </div>
-            </div>
-            <div className="stat-card-mini">
-              <span className="stat-emoji">💚</span>
-              <div>
-                <div className="stat-number-mini">2,500+</div>
-                <div className="stat-label-mini">Happy Farmers</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Contact Info */}
         <div className="footer-contact-section">
           <h4 className="links-title">{t('contactUs')}</h4>

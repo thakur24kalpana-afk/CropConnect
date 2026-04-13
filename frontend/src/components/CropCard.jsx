@@ -161,11 +161,13 @@ function CropCard({ crop, onViewDetails, darkMode }) {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
+    console.log("🛒 CropCard: Adding to cart:", crop.name, "ID:", crop.id);
     addToCart(crop);
   }
 
   const handleRemoveFromCart = (e) => {
     e.stopPropagation();
+    console.log("🗑️ CropCard: Removing from cart:", crop.name, "ID:", crop.id);
     removeFromCart(crop.id);
   }
 
@@ -562,27 +564,29 @@ function CropCard({ crop, onViewDetails, darkMode }) {
               </div>
             )}
           </div>
-{/* Limited Stock Badge */}
-{crop.quantity < 50 && crop.quantity > 0 && (
-  <div style={{
-    position: 'absolute',
-    top: '12px',
-    left: '12px',
-    background: '#ef4444',
-    color: 'white',
-    padding: '4px 10px',
-    borderRadius: '20px',
-    fontSize: '11px',
-    fontWeight: '600',
-    zIndex: 2,
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px'
-  }}>
-    <span>⚠️</span>
-    <span>Limited Stock</span>
-  </div>
-)}
+
+          {/* Limited Stock Badge */}
+          {crop.quantity < 50 && crop.quantity > 0 && (
+            <div style={{
+              position: 'absolute',
+              top: '12px',
+              left: '12px',
+              background: '#ef4444',
+              color: 'white',
+              padding: '4px 10px',
+              borderRadius: '20px',
+              fontSize: '11px',
+              fontWeight: '600',
+              zIndex: 2,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              <span>⚠️</span>
+              <span>Limited Stock</span>
+            </div>
+          )}
+          
           {/* Quote Request Button */}
           <button 
             onClick={handleQuoteRequest}

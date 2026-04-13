@@ -11,54 +11,53 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-
-  // Load cart from localStorage on initial render
-  useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        setCartItems(JSON.parse(savedCart));
-        console.log("📦 Cart loaded from localStorage:", JSON.parse(savedCart));
-      } catch (error) {
-        console.error('Error loading cart:', error);
+  // Initialize state from localStorage
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) {
+        const parsed = JSON.parse(savedCart);
+        console.log("📦 Initial cart from localStorage:", parsed);
+        return parsed;
       }
+    } catch (error) {
+      console.error('Error loading cart:', error);
     }
-  }, []);
+    return [];
+  });
+  
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
+    console.log("💾 Saving cart to localStorage:", cartItems);
     localStorage.setItem('cart', JSON.stringify(cartItems));
-    console.log("📦 Cart saved to localStorage:", cartItems);
   }, [cartItems]);
 
   // Check if item is in cart
   const isInCart = (cropId) => {
-    const exists = cartItems.some(item => item.id === cropId);
-    return exists;
+    return cartItems.some(item => item.id === cropId);
   };
 
   // Add item to cart
   const addToCart = (crop, quantity = 1) => {
-    console.log("🛒 addToCart called with:", crop.name, "quantity:", quantity);
+    console.log("🛒 addToCart CALLED with:", crop.name, "quantity:", quantity);
     
     setCartItems(prevItems => {
-      // Check if item already exists in cart
       const existingItem = prevItems.find(item => item.id === crop.id);
       
       if (existingItem) {
-        console.log("📦 Updating existing item:", crop.name, "old quantity:", existingItem.quantity);
-        // Update quantity if exists
-        return prevItems.map(item =>
+        console.log("📦 Updating existing item:", crop.name);
+        const updatedItems = prevItems.map(item =>
           item.id === crop.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
+        console.log("📦 Updated items:", updatedItems);
+        return updatedItems;
       } else {
         console.log("📦 Adding NEW item:", crop.name);
-        // Add new item
-        return [...prevItems, {
+        const newItem = {
           id: crop.id,
           name: crop.name,
           price: crop.price,
@@ -66,8 +65,12 @@ export const CartProvider = ({ children }) => {
           farmer: crop.farmer,
           image: crop.image,
           quantity: quantity,
+          location: crop.location,
           maxQuantity: crop.quantity
-        }];
+        };
+        const newItems = [...prevItems, newItem];
+        console.log("📦 New items array:", newItems);
+        return newItems;
       }
     });
     
@@ -77,7 +80,11 @@ export const CartProvider = ({ children }) => {
   // Remove item from cart
   const removeFromCart = (itemId) => {
     console.log("🗑️ removeFromCart called for itemId:", itemId);
-    setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
+    setCartItems(prevItems => {
+      const newItems = prevItems.filter(item => item.id !== itemId);
+      console.log("🗑️ After removal:", newItems);
+      return newItems;
+    });
   };
 
   // Update item quantity
@@ -104,7 +111,7 @@ export const CartProvider = ({ children }) => {
   // Get total items count
   const getTotalItems = () => {
     const total = cartItems.reduce((total, item) => total + item.quantity, 0);
-    console.log("📊 getTotalItems:", total);
+    console.log("📊 getTotalItems returning:", total, "from cartItems:", cartItems);
     return total;
   };
 

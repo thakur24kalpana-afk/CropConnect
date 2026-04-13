@@ -5,6 +5,7 @@ import Buyer from "./pages/Buyer"
 import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import Analytics from "./pages/Analytics"
+import Cart from "./pages/Cart"
 import Footer from "./components/Footer"
 import AIChatbot from "./components/AIChatbot"
 import { useLanguage } from "./LanguageContext"
@@ -72,6 +73,7 @@ function App() {
   const handleLoginClick = () => setCurrentPage('login')
   const handleSignupClick = () => setCurrentPage('signup')
   const handleBackToHome = () => { setCurrentPage('home'); setRole(null) }
+  const handleCartClick = () => setCurrentPage('cart')
   const handleSearch = (term) => setSearchTerm(term)
   const handleCategoryClick = (category) => {
     setActiveCategory(category)
@@ -91,186 +93,192 @@ function App() {
           toggleDarkMode={toggleDarkMode}
           onSearch={handleSearch}
           searchTerm={searchTerm}
+          onCartClick={handleCartClick}
         />
 
-        {role === "farmer"    && <Farmer    darkMode={darkMode} onBackToHome={handleBackToHome} />}
-        {role === "buyer"     && <Buyer     darkMode={darkMode} onBackToHome={handleBackToHome} initialCategory={preselectedCategory} />}
-        {role === "analytics" && <Analytics darkMode={darkMode} onBackToHome={handleBackToHome} />}
+        {currentPage === 'cart' ? (
+          <Cart darkMode={darkMode} onBackToHome={handleBackToHome} />
+        ) : (
+          <>
+            {role === "farmer"    && <Farmer    darkMode={darkMode} onBackToHome={handleBackToHome} />}
+            {role === "buyer"     && <Buyer     darkMode={darkMode} onBackToHome={handleBackToHome} initialCategory={preselectedCategory} />}
+            {role === "analytics" && <Analytics darkMode={darkMode} onBackToHome={handleBackToHome} />}
 
-        {!role && (
-          <div className="page-content animate-page">
+            {!role && (
+              <div className="page-content animate-page">
+                {/* Hero Section */}
+                <div className="hero-section">
+                  <div className="hero-overlay"></div>
+                  <div className="hero-content">
+                    <h1 className="hero-title animate-title">{t('heroTitle')}</h1>
+                    <p className="hero-subtitle animate-subtitle">{t('heroSubtitle')}</p>
 
-            {/* Hero Section */}
-            <div className="hero-section">
-              <div className="hero-overlay"></div>
-              <div className="hero-content">
-                <h1 className="hero-title animate-title">{t('heroTitle')}</h1>
-                <p className="hero-subtitle animate-subtitle">{t('heroSubtitle')}</p>
+                    <div className="hero-buttons animate-buttons">
+                      <button className="hero-btn" onClick={() => setRole("farmer")}>
+                        <span className="btn-icon">👨‍🌾</span>
+                        {t('farmerBtn')}
+                      </button>
+                      <button className="hero-btn" onClick={() => {
+                        setRole("buyer")
+                        setPreselectedCategory(activeCategory)
+                      }}>
+                        <span className="btn-icon">🏢</span>
+                        {t('buyerBtn')}
+                      </button>
+                      <button className="hero-btn" onClick={() => setRole("analytics")}>
+                        <span className="btn-icon">📊</span>
+                        Analytics
+                      </button>
+                    </div>
 
-                <div className="hero-buttons animate-buttons">
-                  <button className="hero-btn" onClick={() => setRole("farmer")}>
-                    <span className="btn-icon">👨‍🌾</span>
-                    {t('farmerBtn')}
-                  </button>
-                  <button className="hero-btn" onClick={() => {
-                    setRole("buyer")
-                    setPreselectedCategory(activeCategory)
-                  }}>
-                    <span className="btn-icon">🏢</span>
-                    {t('buyerBtn')}
-                  </button>
-                  <button className="hero-btn" onClick={() => setRole("analytics")}>
-                    <span className="btn-icon">📊</span>
-                    Analytics
-                  </button>
-                </div>
-
-                <div className="hero-stats animate-stats">
-                  <div className="stat-item">
-                    <span className="stat-number">1,247</span>
-                    <span className="stat-label">{t('farmers')}</span>
+                    <div className="hero-stats animate-stats">
+                      <div className="stat-item">
+                        <span className="stat-number">1,247</span>
+                        <span className="stat-label">{t('farmers')}</span>
+                      </div>
+                      <div className="stat-item">
+                        <span className="stat-number">89</span>
+                        <span className="stat-label">{t('buyers')}</span>
+                      </div>
+                      <div className="stat-item">
+                        <span className="stat-number">28</span>
+                        <span className="stat-label">{t('crops')}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-number">89</span>
-                    <span className="stat-label">{t('buyers')}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-number">28</span>
-                    <span className="stat-label">{t('crops')}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Category Pills */}
-            <div className="home-categories">
-              {[
-                { id: 'all',        label: 'All',        icon: '🌾' },
-                { id: 'grains',     label: 'Grains',     icon: '🌾' },
-                { id: 'pulses',     label: 'Pulses',     icon: '🌱' },
-                { id: 'vegetables', label: 'Vegetables', icon: '🥬' },
-                { id: 'fruits',     label: 'Fruits',     icon: '🍎' },
-              ].map(cat => (
-                <button
-                  key={cat.id}
-                  className={`category-pill ${activeCategory === cat.id ? 'active' : ''}`}
-                  onClick={() => handleCategoryClick(cat.id)}
-                >
-                  {cat.icon} {cat.label}
-                  {cat.id !== 'all' && (
-                    <span style={{ marginLeft: 4, opacity: 0.7, fontSize: 12 }}>
-                      ({allCrops.filter(c => c.category === cat.id).length})
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {/* Search Results OR Featured Crops */}
-            {searchTerm ? (
-              <>
-                <div className="search-results-info">
-                  <p>{filteredCrops.length} crops found for "{searchTerm}"</p>
-                </div>
-                <div className="featured-crops-grid">
-                  {filteredCrops.length === 0 ? (
-                    <div className="no-results">🌾 No crops found. Try a different search.</div>
-                  ) : (
-                    filteredCrops.map(crop => (
-                      <CropHomeCard key={crop.id} crop={crop} />
-                    ))
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="section-header">
-                  <h2>
-                    {activeCategory === 'all'
-                      ? 'Featured Crops'
-                      : activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}
-                  </h2>
-                  <p>
-                    {activeCategory === 'all'
-                      ? 'Fresh from the farms near you'
-                      : `${allCrops.filter(c => c.category === activeCategory).length} crops available`}
-                  </p>
                 </div>
 
-                <div className="featured-crops-grid">
-                  {featuredCrops.map(crop => (
-                    <CropHomeCard key={crop.id} crop={crop} />
+                {/* Category Pills */}
+                <div className="home-categories">
+                  {[
+                    { id: 'all',        label: 'All',        icon: '🌾' },
+                    { id: 'grains',     label: 'Grains',     icon: '🌾' },
+                    { id: 'pulses',     label: 'Pulses',     icon: '🌱' },
+                    { id: 'vegetables', label: 'Vegetables', icon: '🥬' },
+                    { id: 'fruits',     label: 'Fruits',     icon: '🍎' },
+                  ].map(cat => (
+                    <button
+                      key={cat.id}
+                      className={`category-pill ${activeCategory === cat.id ? 'active' : ''}`}
+                      onClick={() => handleCategoryClick(cat.id)}
+                    >
+                      {cat.icon} {cat.label}
+                      {cat.id !== 'all' && (
+                        <span style={{ marginLeft: 4, opacity: 0.7, fontSize: 12 }}>
+                          ({allCrops.filter(c => c.category === cat.id).length})
+                        </span>
+                      )}
+                    </button>
                   ))}
                 </div>
 
-                {/* How It Works */}
-                <div className="how-it-works">
-                  <div className="section-header">
-                    <h2>How CropConnect Works</h2>
-                    <p>Simple, transparent, and fair for everyone</p>
-                  </div>
-                  <div className="steps-grid">
-                    <div className="step-card">
-                      <div className="step-icon">📝</div>
-                      <h3>Farmers List Crops</h3>
-                      <p>Add your crops with price and quantity in minutes</p>
+                {/* Search Results OR Featured Crops */}
+                {searchTerm ? (
+                  <>
+                    <div className="search-results-info">
+                      <p>{filteredCrops.length} crops found for "{searchTerm}"</p>
                     </div>
-                    <div className="step-card">
-                      <div className="step-icon">🔍</div>
-                      <h3>Buyers Browse</h3>
-                      <p>Search and filter crops by location, price, and type</p>
+                    <div className="featured-crops-grid">
+                      {filteredCrops.length === 0 ? (
+                        <div className="no-results">🌾 No crops found. Try a different search.</div>
+                      ) : (
+                        filteredCrops.map(crop => (
+                          <CropHomeCard key={crop.id} crop={crop} />
+                        ))
+                      )}
                     </div>
-                    <div className="step-card">
-                      <div className="step-icon">💬</div>
-                      <h3>Make Offers</h3>
-                      <p>Submit offers and negotiate directly with farmers</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="section-header">
+                      <h2>
+                        {activeCategory === 'all'
+                          ? 'Featured Crops'
+                          : activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}
+                      </h2>
+                      <p>
+                        {activeCategory === 'all'
+                          ? 'Fresh from the farms near you'
+                          : `${allCrops.filter(c => c.category === activeCategory).length} crops available`}
+                      </p>
                     </div>
-                    <div className="step-card">
-                      <div className="step-icon">🤝</div>
-                      <h3>Close Deals</h3>
-                      <p>Accept offers and complete transactions smoothly</p>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Testimonials */}
-                <div className="testimonials-section">
-                  <div className="section-header">
-                    <h2>What Farmers & Buyers Say</h2>
-                  </div>
-                  <div className="testimonials-grid">
-                    <div className="testimonial-card">
-                      <div className="testimonial-content">
-                        "CropConnect helped me sell my wheat directly to NGOs at 20% better price than local mandi."
+                    <div className="featured-crops-grid">
+                      {featuredCrops.map(crop => (
+                        <CropHomeCard key={crop.id} crop={crop} />
+                      ))}
+                    </div>
+
+                    {/* How It Works */}
+                    <div className="how-it-works">
+                      <div className="section-header">
+                        <h2>How CropConnect Works</h2>
+                        <p>Simple, transparent, and fair for everyone</p>
                       </div>
-                      <div className="testimonial-author">
-                        <span className="author-name">Rajesh Kumar</span>
-                        <span className="author-role">Farmer, Punjab</span>
+                      <div className="steps-grid">
+                        <div className="step-card">
+                          <div className="step-icon">📝</div>
+                          <h3>Farmers List Crops</h3>
+                          <p>Add your crops with price and quantity in minutes</p>
+                        </div>
+                        <div className="step-card">
+                          <div className="step-icon">🔍</div>
+                          <h3>Buyers Browse</h3>
+                          <p>Search and filter crops by location, price, and type</p>
+                        </div>
+                        <div className="step-card">
+                          <div className="step-icon">💬</div>
+                          <h3>Make Offers</h3>
+                          <p>Submit offers and negotiate directly with farmers</p>
+                        </div>
+                        <div className="step-card">
+                          <div className="step-icon">🤝</div>
+                          <h3>Close Deals</h3>
+                          <p>Accept offers and complete transactions smoothly</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="testimonial-card">
-                      <div className="testimonial-content">
-                        "We now source fresh vegetables for our hostel directly from farmers. No middlemen, better quality."
+
+                    {/* Testimonials */}
+                    <div className="testimonials-section">
+                      <div className="section-header">
+                        <h2>What Farmers & Buyers Say</h2>
                       </div>
-                      <div className="testimonial-author">
-                        <span className="author-name">Delhi University</span>
-                        <span className="author-role">Hostel Kitchen</span>
+                      <div className="testimonials-grid">
+                        <div className="testimonial-card">
+                          <div className="testimonial-content">
+                            "CropConnect helped me sell my wheat directly to NGOs at 20% better price than local mandi."
+                          </div>
+                          <div className="testimonial-author">
+                            <span className="author-name">Rajesh Kumar</span>
+                            <span className="author-role">Farmer, Punjab</span>
+                          </div>
+                        </div>
+                        <div className="testimonial-card">
+                          <div className="testimonial-content">
+                            "We now source fresh vegetables for our hostel directly from farmers. No middlemen, better quality."
+                          </div>
+                          <div className="testimonial-author">
+                            <span className="author-name">Delhi University</span>
+                            <span className="author-role">Hostel Kitchen</span>
+                          </div>
+                        </div>
+                        <div className="testimonial-card">
+                          <div className="testimonial-content">
+                            "The platform is so easy to use. I found buyers for my organic millet in just 2 days!"
+                          </div>
+                          <div className="testimonial-author">
+                            <span className="author-name">Priya Sharma</span>
+                            <span className="author-role">Organic Farmer, MP</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="testimonial-card">
-                      <div className="testimonial-content">
-                        "The platform is so easy to use. I found buyers for my organic millet in just 2 days!"
-                      </div>
-                      <div className="testimonial-author">
-                        <span className="author-name">Priya Sharma</span>
-                        <span className="author-role">Organic Farmer, MP</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </>
+                  </>
+                )}
+              </div>
             )}
-          </div>
+          </>
         )}
 
         {/* AI Chatbot - Floating Button */}

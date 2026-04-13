@@ -1,18 +1,15 @@
-const sqlite3 = require('sqlite3').verbose();
-const { open } = require('sqlite');
+const Database = require('better-sqlite3');
 const path = require('path');
 
-async function insertAllCrops() {
+function insertAllCrops() {
   try {
-    const db = await open({
-      filename: path.join(__dirname, 'cropconnect.db'),
-      driver: sqlite3.Database
-    });
+    // Connect to database (creates file if not exists)
+    const db = new Database(path.join(__dirname, 'cropconnect.db'));
+    
+    console.log('✅ Database connected with better-sqlite3');
 
-    console.log('✅ Database connected');
-
-    // Table recreate with category column
-    await db.exec(`
+    // Drop existing table and recreate
+    db.exec(`
       DROP TABLE IF EXISTS crops;
       CREATE TABLE crops (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,12 +21,14 @@ async function insertAllCrops() {
         location TEXT NOT NULL,
         category TEXT DEFAULT 'grains',
         image TEXT,
+        lat REAL DEFAULT 28.6139,
+        lng REAL DEFAULT 77.2090,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
       );
     `);
-    console.log('✅ Table recreated with category column');
+    console.log('✅ Table created successfully');
 
-    // Saari 28 crops insert karo
+    // Insert all 28 crops
     const crops = [
       // 🌾 GRAINS
       { name: 'Wheat', price: 2200, quantity: 500, farmer: 'Rajesh Kumar', location: 'Ludhiana, Punjab', category: 'grains', image: 'https://images.pexels.com/photos/128402/pexels-photo-128402.jpeg' },
@@ -68,23 +67,32 @@ async function insertAllCrops() {
       { name: 'Apple', price: 8000, quantity: 80, farmer: 'Mohinder Singh', location: 'Shimla, HP', category: 'fruits', image: 'https://images.pexels.com/photos/61127/pexels-photo-61127.jpeg' }
     ];
 
+    // Prepare insert statement
+    const insertStmt = db.prepare(`
+      INSERT INTO crops (name, price, quantity, farmer, location, category, image) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    // Insert each crop
     for (const crop of crops) {
-      await db.run(
-        'INSERT INTO crops (name, price, quantity, farmer, location, category, image) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [crop.name, crop.price, crop.quantity, crop.farmer, crop.location, crop.category, crop.image]
-      );
+      insertStmt.run(crop.name, crop.price, crop.quantity, crop.farmer, crop.location, crop.category, crop.image);
       console.log(`✅ Inserted: ${crop.name}`);
     }
 
     console.log(`🎉 Total ${crops.length} crops inserted successfully!`);
 
     // Verify count
-    const count = await db.get('SELECT COUNT(*) as count FROM crops');
+    const count = db.prepare('SELECT COUNT(*) as count FROM crops').get();
     console.log(`📊 Total crops in database: ${count.count}`);
+
+    // Close database
+    db.close();
+    console.log('✅ Database connection closed');
 
   } catch (error) {
     console.error('❌ Error:', error);
   }
 }
 
+// Run the function
 insertAllCrops();
